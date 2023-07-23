@@ -1,5 +1,4 @@
-#+TITLE: Thesaurus 
-#+SUBTITLE: A simple CLI thesaurus (English)
+#+title: A simple CLI thesaurus (English)
 * This is a simple perl script
 Run thes.pl, or for a neater output using pagination (less), a bash script (requires bash 4/5+)
 
