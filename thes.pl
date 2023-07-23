@@ -5,7 +5,7 @@ $ENV{'PATH'} = join ":", qw(/usr/local/bin /bin /usr/bin);
 
 my @arr;
 my $pfh;
-my $thesaurus = "~/bin/mthesaur.txt";
+my $thesaurus = "mthesaur.txt";
 my $arg       = shift @ARGV || die "I need a word to look for.\n";
 
 open(my $ifh, "look \"$arg\" $thesaurus |") || die "look $thesaurus";
