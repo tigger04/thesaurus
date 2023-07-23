@@ -1,0 +1,7 @@
+#+TITLE: Thesaurus 
+#+SUBTITLE: A simple CLI thesaurus (English)
+* This is a simple perl script
+Run thes.pl, or for a neater output using pagination (less), a bash script (requires bash 4/5+)
+
+I should probably come back and document this properly. Not entirely sure how it came about. Doing some housekeeping and came across this little script that I use all the time, and figured it should be in its own github repo.
+
