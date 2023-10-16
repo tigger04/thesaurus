@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
-#shellcheck source=helper.sh
-source ~/bin/helper.sh
-#shellcheck source=helper-funcs.sh
-source ~/bin/helper-funcs.sh
+#shellcheck source=../.qfuncs.sh
+. ~/.qfuncs.sh
 
 # decide whether this is appropriate:
 set -e
-
-debug_var command_base
 
 # while [ $# -gt 0 ]; do
 #    (
@@ -19,51 +15,55 @@ debug_var command_base
 #    shift
 # done
 
-while [ $# -gt 0 ]; do
+# while [ $# -gt 0 ]; do
 
-   words=()
-   unset header
+# fullpath $cmd_base
 
-   "$command_dir/thes.pl" $1 | tr -d '\r' | sed -E 's/[[:space:]][[:space:]]+/\t/g' |
-      while read -r output_line; do
+cd "$(dirname "$(realpath "$0")")" || die
 
-         # if [[ "$output_line" == "***"* ]]; then
-         #     warn "$output_line"
-         #     break
-         # elif [[ "$output_line" == *"..." ]]; then
-         #     info "$output_line"
-         #     continue
-         # fi
+words=()
+# unset header
 
-         # output_line="${output_line}"
-         # output_line="${output_line//,/}"
+"./thes.pl" $1 | tr -d '\r' | sed -E 's/[[:space:]][[:space:]]+/\t/g' |
+   while read -r output_line; do
 
-         preIFS="$IFS"
-         IFS=$'\t'
-         output_words=($output_line)
-         IFS="$preIFS"
+      if [[ "$output_line" == "***"* ]]; then
+         warn "$output_line"
+         break
+      elif [[ "$output_line" == *"..." ]]; then
+         info "$output_line"
+         continue
+      fi
 
-         if [ ${#output_words[@]} -eq 1 ]; then
-            if [ "${#words}" -gt 0 ]; then
-               if [ -n "$header" ]; then
-                  thinbanner "${header^^}"
-               fi
-               printf '%s\n' "${words[@]}" | column -x -c $((COLUMNS - 1))
+      # output_line="${output_line}"
+      # output_line="${output_line//,/}"
+
+      preIFS="$IFS"
+      IFS=$'\t'
+      output_words=($output_line)
+      IFS="$preIFS"
+
+      if [ ${#output_words[@]} -eq 1 ]; then
+         if [ "${#words}" -gt 0 ]; then
+            if [ -n "$header" ]; then
+               thinbanner "${header^^}"
             fi
-
-            header="${output_words[0]}"
-            words=()
-
-         else
-            for word in "${output_words[@]}"; do
-               words+=("${word}")
-            done
+            printf '%s\n' "${words[@]}" | column -x -c $((COLUMNS - 1))
          fi
 
-      done | less
+         header="${output_words[0]}"
+         words=()
 
-   shift
-done
+      else
+         for word in "${output_words[@]}"; do
+            words+=("${word}")
+         done
+      fi
+
+   done | less
+
+# shift
+# done
 
 #     rhyme "$1" |
 #         tr ',' '\n' |
