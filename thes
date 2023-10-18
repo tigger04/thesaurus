@@ -12,80 +12,31 @@ set -e
 #    pager=less
 # fi
 
-if [[ $1 =~ ^--?c(ols)?$ ]]; then
-   colpipe=('|' 'column')
-else
-   unset colpipe
-fi
+# if [[ $1 =~ ^--?c(ols)?$ ]]; then
+#    colpipe=true
+#    shift
+# else
+#    colpipe=false
+# fi
 
 cd "$(dirname "$(realpath "$0")")" || die
 
-words=()
-read -r cols < <(tput cols)
+# words=()
+# read -r cols < <(tput cols)
 # unset header
 
-doit() {
-   ./thes.pl "$1" #| tr -d $'\r' | column -t -c $cols | $pager
-}
+# mapfile words < <(./thes.pl "$1")
 
-mapfile words < <(./thes.pl "$1")
+./thes.pl "$1"
 
-osascript <<EOM
-set longText to "${words[@]}"
-set dialogText to "
-    <html>
-        <body>
-            <p style='width: 300px; height: 200px; overflow: scroll; white-space: pre-wrap;'>" & longText & "</p>
-        </body>
-    </html>
-"
-display dialog dialogText as text with title "Scrollable Text" buttons {"OK"}
-EOM
-
-# "./thes.pl" $1 | tr -d '\r' | sed -E 's/[[:space:]][[:space:]]+/\t/g' |
-#    while read -r output_line; do
-
-#       if [[ "$output_line" == "***"* ]]; then
-#          warn "$output_line"
-#          break
-#       elif [[ "$output_line" == *"..." ]]; then
-#          info "$output_line"
-#          continue
-#       fi
-
-#       # output_line="${output_line}"
-#       # output_line="${output_line//,/}"
-
-#       preIFS="$IFS"
-#       IFS=$'\t'
-#       output_words=($output_line)
-#       IFS="$preIFS"
-
-#       if [ ${#output_words[@]} -eq 1 ]; then
-#          if [ "${#words}" -gt 0 ]; then
-#             if [ -n "$header" ]; then
-#                thinbanner "${header^^}"
-#             fi
-#             printf '%s\n' "${words[@]}" | column -x -c $((COLUMNS - 1))
-#          fi
-
-#          header="${output_words[0]}"
-#          words=()
-
-#       else
-#          for word in "${output_words[@]}"; do
-#             words+=("${word}")
-#          done
-#       fi
-
-#    done | less
-
-# # shift
-# # done
-
-# #     rhyme "$1" |
-# #         tr ',' '\n' |
-# #         sed -E 's/^([0-9]+):/---\1---\n/g' |
-# #         bat
-# #     shift
-# # done
+# osascript <<EOM
+# set longText to "${words[@]}"
+# set dialogText to "
+#     <html>
+#         <body>
+#             <p style='width: 300px; height: 200px; overflow: scroll; white-space: pre-wrap;'>" & longText & "</p>
+#         </body>
+#     </html>
+# "
+# display dialog dialogText as text with title "Scrollable Text" buttons {"OK"}
+# EOM
