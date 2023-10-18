@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+#shellcheck source=../.qfuncs.sh
+. ~/.qfuncs.sh
+
+# decide whether this is appropriate:
+set -e
+
+# while [ $# -gt 0 ]; do
+#    (
+#       thinbanner "$1" >/dev/stderr
+#       thes.pl "$1"
+#    ) | column -x -c $((COLUMNS / 2)) | less
+
+#    shift
+# done
+
+# while [ $# -gt 0 ]; do
+
+# fullpath $cmd_base
+
+cd "$(dirname "$(realpath "$0")")" || die
+
+words=()
+# unset header
+
+mapfile -t thes_lines < <("./thes.pl" $1 | tr -d '\r' | sed -E 's/[[:space:]][[:space:]]+/\t/g')
+
+for thes_line in "${thes_lines[@]}"; do
+   # "./thes.pl" $1 | tr -d '\r' | sed -E 's/[[:space:]][[:space:]]+/\t/g' |
+   # while read -r output_line; do
+
+   if [[ "$thes_line" == "***"* ]]; then
+      warn "$thes_line"
+      break
+   elif [[ "$thes_line" == *"..." ]]; then
+      info "$thes_line"
+      continue
+   fi
+
+   # output_line="${output_line}"
+   # output_line="${output_line//,/}"
+
+   preIFS="$IFS"
+   IFS=$'\t'
+   output_words=($thes_line)
+   IFS="$preIFS"
+
+   if [ ${#output_words[@]} -eq 1 ]; then
+      if [ "${#words}" -gt 0 ]; then
+         if [ -n "$header" ]; then
+            thinbanner "${header^^}"
+         fi
+         printf '%s\n' "${words[@]}" | column -x -c $((COLUMNS - 1))
+      fi
+
+      header="${output_words[0]}"
+      words=()
+
+   else
+      for word in "${output_words[@]}"; do
+         words+=("${word}")
+      done
+   fi
+
+done
+
+declare -p words | nice-declare
+
+# shift
+# done
+
+#     rhyme "$1" |
+#         tr ',' '\n' |
+#         sed -E 's/^([0-9]+):/---\1---\n/g' |
+#         bat
+#     shift
+# done
